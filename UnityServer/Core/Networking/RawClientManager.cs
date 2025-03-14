@@ -60,6 +60,23 @@ namespace UnityServer.Core.Networking
             Scribe.Write(whoList.ToString());
         }
 
+        public async Task Shutdown()
+        {
+            try
+            {
+                foreach(RawClient rClient in RawClientsConnected)
+                {
+                    await rClient.WriteLineAsync("Sorry, a shutdown was called.");
+                    
+                    rClient.Disconnect();
+                }
+            }
+            catch(Exception ex)
+            {
+                Scribe.Error(ex);
+            }
+        }
+
         public async Task BroadcastMessage(string message)
         {
             var clients = RawClientsConnected.ToList();
